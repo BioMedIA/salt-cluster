@@ -1,7 +1,5 @@
 
 base:
   '*':
-    #- salt
-    #- lhcb
+    - salt
     - slurm
-    - ldap

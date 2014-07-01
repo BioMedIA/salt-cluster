@@ -3,4 +3,3 @@ base:
   '*':
     - salt
     - slurm
-    - ldap
