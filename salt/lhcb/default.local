@@ -1,3 +1,0 @@
-CVMFS_REPOSITORIES=lhcb.cern.ch,lhcb-conddb.cern.ch,grid.cern.ch,sft.cern.ch,geant4.cern.ch
-CVMFS_HTTP_PROXY="http://localhost:3128"
-CVMFS_QUOTA_LIMIT=20000
