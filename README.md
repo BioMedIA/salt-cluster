@@ -1,4 +1,7 @@
 
-# Setup for a scientific compute cluster
+# BioMedIAs Salt provisions
 
+Salt states provisioning BioMedIA group's machines.
 
+Availables states:
+  * SLURM
