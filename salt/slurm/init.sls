@@ -1,6 +1,7 @@
 
 # Munge provides authentication for SLURM
 
+# munge.key must be the same across all the nodes of the cluster
 /etc/munge/munge.key:
   file:
     - managed
@@ -36,12 +37,13 @@ munge:
       - user: slurm
 
 slurm:
-  name: slurm-llnl
   user:
     - present
   pkg:
     - installed
+    - name: slurm-llnl 
   service.running:
+    - name: slurm-llnl
     - watch:
       - pkg: slurm 
       - pkg: slurm-plugins
@@ -57,9 +59,9 @@ slurm:
       - file: /var/spool/slurm
 
 slurm-plugins:
-  name: slurm-llnl-basic-plugins
   pkg:
     - installed
+    - name: slurm-llnl-basic-plugins
 
 # specific to SLURM Controller
 {% if grains['host'] == pillar['slurm']['controller'] %}
