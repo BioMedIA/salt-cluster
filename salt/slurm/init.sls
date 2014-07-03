@@ -81,3 +81,12 @@ slurm-sview:
   pkg:
     - installed
 {% endif %}
+
+# TODO for the moment only bardolph has gres => to generalize!
+{% if grains['host'] == "bardolph" %}
+/etc/slurm-llnl/gres.conf:
+  file:
+    - managed
+    - source: salt://slurm/bardolph/gres.conf
+{% endif %}
+
