@@ -1,5 +1,5 @@
 
 
 salt:
-  master: hornbeam.doc.ic.ac.uk
+  master: biomedia04.doc.ic.ac.uk
 
