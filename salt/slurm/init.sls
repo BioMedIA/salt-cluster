@@ -30,6 +30,15 @@ munge:
     - source: salt://slurm/slurm.conf
     - template: jinja
 
+/etc/slurm-llnl/slurm.cert:
+  file:
+    - managed
+    - source: salt://slurm/slurm.cert
+    - mode: 400
+    - user: slurm
+    - require:
+      - user: slurm
+
 /var/spool/slurm:
   file.directory:
     - user: slurm
@@ -37,8 +46,12 @@ munge:
       - user: slurm
 
 slurm:
-  user:
-    - present
+  user.present:
+    - fullname: SLURM daemon user account
+    - uid: 451
+    - gid: 451
+    - home: /var/spool/slurm
+    - shell: /bin/true
   pkg:
     - installed
     - name: slurm-llnl 
@@ -71,6 +84,15 @@ slurm-plugins:
     - source: salt://slurm/slurmdbd.conf
     - template: jinja
 
+/etc/slurm-llnl/slurm.key:
+  file:
+    - managed
+    - source: salt://slurm/slurm.key
+    - mode: 400
+    - user: slurm
+    - require:
+      - user: slurm
+      
 slurm-db:
   name: slurm-llnl-slurmdbd
   pkg:
