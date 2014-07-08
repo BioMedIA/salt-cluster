@@ -7,7 +7,6 @@
     - managed
     - source: salt://slurm/munge.key
     - mode: 400
-    - user: munge
     - require:
       - user: munge
 
@@ -35,22 +34,25 @@ munge:
     - managed
     - source: salt://slurm/slurm.cert
     - mode: 400
-    - user: slurm
-    - require:
-      - user: slurm
 
-/var/spool/slurm:
+/var/spool/slurm-llnl:
   file.directory:
+    - group: slurm
     - user: slurm
     - require:
+      - group: slurm
       - user: slurm
 
+# TODO handle different names given distro (slurm, slurm-llnl, ...)
 slurm:
+  group.present:
+    - gid: 451
+    - system: True
   user.present:
     - fullname: SLURM daemon user account
-    - uid: 451
     - gid: 451
-    - home: /var/spool/slurm
+    - uid: 451
+    - home: /var/spool/slurm-llnl
     - shell: /bin/true
   pkg:
     - installed
@@ -61,7 +63,7 @@ slurm:
       - pkg: slurm 
       - pkg: slurm-plugins
 # specific to SLURM Controller
-{% if grains['host'] == pillar['slurm']['controller'] %}
+{% if grains['id'] == pillar['slurm']['controller'] %}
       - pkg: slurm-db
       - pkg: slurm-sview
       - file: /etc/slurm-llnl/slurmdbd.conf
@@ -69,7 +71,7 @@ slurm:
       - user: slurm
       - pkg: munge
       - file: /etc/slurm-llnl/slurm.conf
-      - file: /var/spool/slurm
+      - file: /var/spool/slurm-llnl
 
 slurm-plugins:
   pkg:
@@ -77,7 +79,7 @@ slurm-plugins:
     - name: slurm-llnl-basic-plugins
 
 # specific to SLURM Controller
-{% if grains['host'] == pillar['slurm']['controller'] %}
+{% if grains['id'] == pillar['slurm']['controller'] %}
 /etc/slurm-llnl/slurmdbd.conf:
   file:
     - managed
@@ -89,19 +91,16 @@ slurm-plugins:
     - managed
     - source: salt://slurm/slurm.key
     - mode: 400
-    - user: slurm
-    - require:
-      - user: slurm
       
 slurm-db:
-  name: slurm-llnl-slurmdbd
   pkg:
     - installed
+    - name: slurm-llnl-slurmdbd
 
 slurm-sview:
-  name: slurm-llnl-sview
   pkg:
     - installed
+    - name: slurm-llnl-sview
 {% endif %}
 
 # TODO for the moment only bardolph has gres => to generalize!
