@@ -43,6 +43,38 @@ munge:
       - group: slurm
       - user: slurm
 
+# specific to SLURM Controller
+{% if grains['id'] == pillar['slurm']['controller'] %}
+/etc/slurm-llnl/slurm.key:
+  file:
+    - managed
+    - source: salt://slurm/slurm.key
+    - mode: 400
+      
+slurm-sview:
+  pkg:
+    - installed
+    - name: slurm-llnl-sview
+
+/var/log/slurm-llnl/slurmctld.log:
+  file:
+    - managed
+    - group: slurm
+    - user: slurm
+    - require:
+      - group: slurm
+      - user: slurm
+
+/var/log/slurm-llnl/sched.log:
+  file:
+    - managed
+    - group: slurm
+    - user: slurm
+    - require:
+      - group: slurm
+      - user: slurm
+{% endif %}
+
 # TODO handle different names given distro (slurm, slurm-llnl, ...)
 slurm:
   group.present:
@@ -62,46 +94,19 @@ slurm:
     - watch:
       - pkg: slurm 
       - pkg: slurm-plugins
-# specific to SLURM Controller
-{% if grains['id'] == pillar['slurm']['controller'] %}
-      - pkg: slurm-db
-      - pkg: slurm-sview
-      - file: /etc/slurm-llnl/slurmdbd.conf
-{% endif %}
       - user: slurm
       - pkg: munge
       - file: /etc/slurm-llnl/slurm.conf
       - file: /var/spool/slurm-llnl
+{% if grains['id'] == pillar['slurm']['controller'] %}
+      - file: /var/log/slurm-llnl/sched.log
+      - file: /var/log/slurm-llnl/slurmctld.log
+{% endif %}
 
 slurm-plugins:
   pkg:
     - installed
     - name: slurm-llnl-basic-plugins
-
-# specific to SLURM Controller
-{% if grains['id'] == pillar['slurm']['controller'] %}
-/etc/slurm-llnl/slurmdbd.conf:
-  file:
-    - managed
-    - source: salt://slurm/slurmdbd.conf
-    - template: jinja
-
-/etc/slurm-llnl/slurm.key:
-  file:
-    - managed
-    - source: salt://slurm/slurm.key
-    - mode: 400
-      
-slurm-db:
-  pkg:
-    - installed
-    - name: slurm-llnl-slurmdbd
-
-slurm-sview:
-  pkg:
-    - installed
-    - name: slurm-llnl-sview
-{% endif %}
 
 # TODO for the moment only bardolph has gres => to generalize!
 {% if grains['host'] == "bardolph" %}
