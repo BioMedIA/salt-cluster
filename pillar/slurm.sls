@@ -6,10 +6,8 @@ slurm:
       mem: 15973
       cores: 12
       gres:
-        k40: 1
-        gtx780: 1
+        gpu: 2
       
   gres:
-    - k40
-    - gtx780
+    - gpu
 
