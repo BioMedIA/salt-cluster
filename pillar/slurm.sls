@@ -1,8 +1,8 @@
 
 slurm:
-  controller: biomedia04.doc.ic.ac.uk
+  controller: biomedia04
   nodes:
-    bardolph.doc.ic.ac.uk:
+    bardolph:
       mem: 15973
       cores: 12
       gres:

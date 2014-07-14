@@ -44,7 +44,7 @@ munge:
       - user: slurm
 
 # specific to SLURM Controller
-{% if grains['id'] == pillar['slurm']['controller'] %}
+{% if grains['host'] == pillar['slurm']['controller'] %}
 /etc/slurm-llnl/slurm.key:
   file:
     - managed
@@ -98,7 +98,7 @@ slurm:
       - pkg: munge
       - file: /etc/slurm-llnl/slurm.conf
       - file: /var/spool/slurm-llnl
-{% if grains['id'] == pillar['slurm']['controller'] %}
+{% if grains['host'] == pillar['slurm']['controller'] %}
       - file: /var/log/slurm-llnl/sched.log
       - file: /var/log/slurm-llnl/slurmctld.log
 {% endif %}
