@@ -1,6 +1,7 @@
 
 slurm:
   controller: biomedia04
+  accounting: 
   nodes:
     bardolph:
       mem: 15973

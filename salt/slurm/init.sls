@@ -1,4 +1,3 @@
-
 # Munge provides authentication for SLURM
 
 # munge.key must be the same across all the nodes of the cluster
@@ -43,6 +42,17 @@ munge:
       - group: slurm
       - user: slurm
 
+{% if grains['host'] != pillar['slurm']['controller'] %}
+/var/log/slurm-llnl/slurm.log:
+  file:
+    - managed
+    - group: slurm
+    - user: slurm
+    - require:
+      - group: slurm
+      - user: slurm
+{% endif %}
+
 # specific to SLURM Controller
 {% if grains['host'] == pillar['slurm']['controller'] %}
 /etc/slurm-llnl/slurm.key:
@@ -51,10 +61,29 @@ munge:
     - source: salt://slurm/slurm.key
     - mode: 400
       
-slurm-sview:
-  pkg:
-    - installed
-    - name: slurm-llnl-sview
+/etc/slurm-llnl/slurmdbd.conf:
+  file:
+    - managed
+    - source: salt://slurm/slurmdbd.conf
+    - template: jinja
+
+/var/log/slurm-llnl/slurmdbd.log:
+  file:
+    - managed
+    - group: slurm
+    - user: slurm
+    - require:
+      - group: slurm
+      - user: slurm
+
+/var/log/slurm-llnl/slurm_jobacct.log:
+  file:
+    - managed
+    - group: slurm
+    - user: slurm
+    - require:
+      - group: slurm
+      - user: slurm
 
 /var/log/slurm-llnl/slurmctld.log:
   file:
@@ -78,12 +107,12 @@ slurm-sview:
 # TODO handle different names given distro (slurm, slurm-llnl, ...)
 slurm:
   group.present:
-    - gid: 451
+    - gid: 11
     - system: True
   user.present:
     - fullname: SLURM daemon user account
-    - gid: 451
-    - uid: 451
+    - gid: 11
+    - uid: 11
     - home: /var/spool/slurm-llnl
     - shell: /bin/true
   pkg:
@@ -101,6 +130,8 @@ slurm:
 {% if grains['host'] == pillar['slurm']['controller'] %}
       - file: /var/log/slurm-llnl/sched.log
       - file: /var/log/slurm-llnl/slurmctld.log
+#      - pkg: slurm-db
+      - file: /etc/slurm-llnl/slurmdbd.conf
 {% endif %}
 
 slurm-plugins:
