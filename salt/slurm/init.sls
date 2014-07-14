@@ -1,6 +1,20 @@
 # Munge provides authentication for SLURM
 
 # munge.key must be the same across all the nodes of the cluster
+munge:
+  pkg:
+    - installed
+  user:
+    - present
+    - gid_from_name: True
+    - system: True
+    - shell: /bin/true
+  service:
+    - running
+    - require:
+      - pkg: munge
+      - file: /etc/munge/munge.key
+
 /etc/munge/munge.key:
   file:
     - managed
@@ -8,17 +22,6 @@
     - mode: 400
     - require:
       - user: munge
-
-munge:
-  pkg:
-    - installed
-  user:
-    - present
-  service:
-    - running
-    - require:
-      - pkg: munge
-      - file: /etc/munge/munge.key
 
 # The SLURM scheduling system
 
@@ -39,7 +42,6 @@ munge:
     - group: slurm
     - user: slurm
     - require:
-      - group: slurm
       - user: slurm
 
 {% if grains['host'] != pillar['slurm']['controller'] %}
@@ -49,7 +51,6 @@ munge:
     - group: slurm
     - user: slurm
     - require:
-      - group: slurm
       - user: slurm
 {% endif %}
 
@@ -73,7 +74,6 @@ munge:
     - group: slurm
     - user: slurm
     - require:
-      - group: slurm
       - user: slurm
 
 /var/log/slurm-llnl/slurm_jobacct.log:
@@ -82,7 +82,6 @@ munge:
     - group: slurm
     - user: slurm
     - require:
-      - group: slurm
       - user: slurm
 
 /var/log/slurm-llnl/slurmctld.log:
@@ -91,7 +90,6 @@ munge:
     - group: slurm
     - user: slurm
     - require:
-      - group: slurm
       - user: slurm
 
 /var/log/slurm-llnl/sched.log:
@@ -100,19 +98,15 @@ munge:
     - group: slurm
     - user: slurm
     - require:
-      - group: slurm
       - user: slurm
 {% endif %}
 
 # TODO handle different names given distro (slurm, slurm-llnl, ...)
 slurm:
-  group.present:
-    - gid: 11
-    - system: True
   user.present:
     - fullname: SLURM daemon user account
-    - gid: 11
-    - uid: 11
+    - gid_from_name: True
+    - system: True
     - home: /var/spool/slurm-llnl
     - shell: /bin/true
   pkg:
