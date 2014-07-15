@@ -4,20 +4,24 @@
 munge:
   pkg:
     - installed
-  user:
-    - present
+  group.present:
+    - system: True
+  user.present:
     - gid_from_name: True
     - system: True
     - shell: /bin/true
+    - createhome: False
   service:
     - running
     - require:
       - pkg: munge
+      - user: munge
       - file: /etc/munge/munge.key
 
 /etc/munge/munge.key:
-  file:
-    - managed
+  file.managed:
+    - group: munge
+    - user: munge
     - source: salt://slurm/munge.key
     - mode: 400
     - require:
@@ -26,14 +30,12 @@ munge:
 # The SLURM scheduling system
 
 /etc/slurm-llnl/slurm.conf:
-  file:
-    - managed
+  file.managed:
     - source: salt://slurm/slurm.conf
     - template: jinja
 
 /etc/slurm-llnl/slurm.cert:
-  file:
-    - managed
+  file.managed:
     - source: salt://slurm/slurm.cert
     - mode: 400
 
@@ -103,6 +105,8 @@ munge:
 
 # TODO handle different names given distro (slurm, slurm-llnl, ...)
 slurm:
+  group.present:
+    - system: True
   user.present:
     - fullname: SLURM daemon user account
     - gid_from_name: True
@@ -115,9 +119,9 @@ slurm:
   service.running:
     - name: slurm-llnl
     - watch:
+      - user: slurm
       - pkg: slurm 
       - pkg: slurm-plugins
-      - user: slurm
       - pkg: munge
       - file: /etc/slurm-llnl/slurm.conf
       - file: /var/spool/slurm-llnl
