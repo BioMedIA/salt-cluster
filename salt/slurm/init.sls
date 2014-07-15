@@ -11,8 +11,7 @@ munge:
     - system: True
     - shell: /bin/true
     - createhome: False
-  service:
-    - running
+  service.running:
     - require:
       - pkg: munge
       - user: munge
@@ -48,8 +47,7 @@ munge:
 
 {% if grains['host'] != pillar['slurm']['controller'] %}
 /var/log/slurm-llnl/slurm.log:
-  file:
-    - managed
+  file.managed:
     - group: slurm
     - user: slurm
     - require:
@@ -59,44 +57,38 @@ munge:
 # specific to SLURM Controller
 {% if grains['host'] == pillar['slurm']['controller'] %}
 /etc/slurm-llnl/slurm.key:
-  file:
-    - managed
+  file.managed:
     - source: salt://slurm/slurm.key
     - mode: 400
       
 /etc/slurm-llnl/slurmdbd.conf:
-  file:
-    - managed
+  file.managed:
     - source: salt://slurm/slurmdbd.conf
     - template: jinja
 
 /var/log/slurm-llnl/slurmdbd.log:
-  file:
-    - managed
+  file.managed:
     - group: slurm
     - user: slurm
     - require:
       - user: slurm
 
 /var/log/slurm-llnl/slurm_jobacct.log:
-  file:
-    - managed
+  file.managed:
     - group: slurm
     - user: slurm
     - require:
       - user: slurm
 
 /var/log/slurm-llnl/slurmctld.log:
-  file:
-    - managed
+  file.managed:
     - group: slurm
     - user: slurm
     - require:
       - user: slurm
 
 /var/log/slurm-llnl/sched.log:
-  file:
-    - managed
+  file.managed:
     - group: slurm
     - user: slurm
     - require:
@@ -113,8 +105,7 @@ slurm:
     - system: True
     - home: /var/spool/slurm-llnl
     - shell: /bin/true
-  pkg:
-    - installed
+  pkg.installed:
     - name: slurm-llnl 
   service.running:
     - name: slurm-llnl
@@ -133,15 +124,13 @@ slurm:
 {% endif %}
 
 slurm-plugins:
-  pkg:
-    - installed
+  pkg.installed:
     - name: slurm-llnl-basic-plugins
 
 # TODO for the moment only bardolph has gres => to generalize!
 {% if grains['host'] == "bardolph" %}
 /etc/slurm-llnl/gres.conf:
-  file:
-    - managed
+  file.managed:
     - source: salt://slurm/bardolph/gres.conf
 {% endif %}
 
