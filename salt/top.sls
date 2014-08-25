@@ -2,4 +2,5 @@
 base:
   '*':
     - salt
+    - munge
     - slurm
