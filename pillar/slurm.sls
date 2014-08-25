@@ -1,7 +1,6 @@
 
 slurm:
   controller: biomedia04
-  accounting: 
   nodes:
     gpus:
       bardolph:
