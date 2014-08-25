@@ -6,7 +6,9 @@ munge:
     - installed
   group.present:
     - system: True
+    - gid: 98
   user.present:
+    - uid: 98
     - gid_from_name: True
     - system: True
     - shell: /bin/true
@@ -23,6 +25,46 @@ munge:
     - user: munge
     - source: salt://slurm/munge.key
     - mode: 400
+    - require:
+      - user: munge
+
+/var/log/munge:
+  file.directory:
+    - group: munge
+    - user: munge
+    - recurse:
+      - user
+      - group
+    - require:
+      - user: munge
+
+/run/munge:
+  file.directory:
+    - group: munge
+    - user: munge
+    - recurse:
+      - user
+      - group
+    - require:
+      - user: munge
+
+/var/lib/munge:
+  file.directory:
+    - group: munge
+    - user: munge
+    - recurse:
+      - user
+      - group
+    - require:
+      - user: munge
+
+/etc/munge:
+  file.directory:
+    - group: munge
+    - user: munge
+    - recurse:
+      - user
+      - group
     - require:
       - user: munge
 
@@ -99,8 +141,10 @@ munge:
 slurm:
   group.present:
     - system: True
+    - gid: 97
   user.present:
     - fullname: SLURM daemon user account
+    - uid: 97
     - gid_from_name: True
     - system: True
     - home: /var/spool/slurm-llnl
