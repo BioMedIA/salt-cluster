@@ -68,6 +68,11 @@
       - user: slurm
 {% endif %}
 
+
+# State munge has to be included to allow dependency on munge package
+include:
+  - munge
+
 # TODO handle different names given distro (slurm, slurm-llnl, ...)
 slurm:
   group.present:
