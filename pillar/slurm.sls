@@ -24,14 +24,16 @@ slurm:
         cores: 8
     {% endfor %}
 
-    {% for N in range(1,4) %} 
+    {% for N in range(1,4,2) %} 
       biomedia0{{N}}:
         mem: 64418
         cores: 24
     {% endfor %}
-      biomedia05:
+    {% for N in range(2,6,3) %} 
+      biomedia0{{N}}:
         mem: 64417
         cores: 24
+    {% endfor %}
     {% for N in range(6,10) %} 
       biomedia0{{N}}:
         mem: 128851
