@@ -33,20 +33,29 @@
   file.managed:
     - source: salt://slurm/slurm.key
     - mode: 400
-      
-/etc/slurm-llnl/slurmdbd.conf:
-  file.managed:
-    - source: salt://slurm/slurmdbd.conf
-    - template: jinja
+ 
+## not used at the moment -> pgsql badly supported
+## switched to filetxt    
+#/etc/slurm-llnl/slurmdbd.conf:
+#  file.managed:
+#    - source: salt://slurm/slurmdbd.conf
+#    - template: jinja
+#
+#/var/log/slurm-llnl/slurmdbd.log:
+#  file.managed:
+#    - group: slurm
+#    - user: slurm
+#    - require:
+#      - user: slurm
 
-/var/log/slurm-llnl/slurmdbd.log:
+/var/log/slurm-llnl/accounting.log:
   file.managed:
     - group: slurm
     - user: slurm
     - require:
       - user: slurm
 
-/var/log/slurm-llnl/slurm_jobacct.log:
+/var/log/slurm-llnl/job_completions.log:
   file.managed:
     - group: slurm
     - user: slurm
@@ -99,18 +108,19 @@ slurm:
 {% if grains['host'] == pillar['slurm']['controller'] %}
       - file: /var/log/slurm-llnl/sched.log
       - file: /var/log/slurm-llnl/slurmctld.log
-#      - pkg: slurm-db
-      - file: /etc/slurm-llnl/slurmdbd.conf
+#      - file: /etc/slurm-llnl/slurmdbd.conf
 {% endif %}
 
 slurm-plugins:
   pkg.installed:
     - name: slurm-llnl-basic-plugins
 
-# TODO for the moment only bardolph has gres => to generalize!
-{% if grains['host'] == "bardolph" %}
 /etc/slurm-llnl/gres.conf:
   file.managed:
+{% if grains['host'] == "bardolph" %}
     - source: salt://slurm/bardolph/gres.conf
+{% else %}
+    # empty gres file by default (avoid complaints in log)
+    - source: salt://slurm/default/gres.conf
 {% endif %}
 
