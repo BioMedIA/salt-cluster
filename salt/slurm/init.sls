@@ -119,8 +119,7 @@ slurm-plugins:
   file.managed:
 {% if grains['host'] == "bardolph" %}
     - source: salt://slurm/bardolph/gres.conf
-{% else %}
-    # empty gres file by default (avoid complaints in log)
+{% else %} 
     - source: salt://slurm/default/gres.conf
 {% endif %}
 

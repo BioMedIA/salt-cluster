@@ -1,5 +1,5 @@
 
 
 salt:
-  master: biomedia04.doc.ic.ac.uk
+  master: predict5.doc.ic.ac.uk
 

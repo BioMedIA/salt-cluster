@@ -1,6 +1,6 @@
 
 slurm:
-  controller: biomedia04
+  controller: predict5
   nodes:
     gpus:
       bardolph:
@@ -15,9 +15,6 @@ slurm:
         mem: 32177
         cores: 8
     {% endfor %}
-      predict5:
-        mem: 24113
-        cores: 8
     {% for N in range(6,9,2) %} 
       predict{{N}}:
         mem: 32177
