@@ -68,3 +68,7 @@ munge:
     - require:
       - user: munge
 
+/etc/default/munge:
+   file.managed:
+    - source: salt://munge/etc_default_munge
+ 
