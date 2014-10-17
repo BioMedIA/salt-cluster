@@ -34,33 +34,20 @@
     - source: salt://slurm/slurm.key
     - mode: 400
  
-## not used at the moment -> pgsql badly supported
-## switched to filetxt    
-#/etc/slurm-llnl/slurmdbd.conf:
-#  file.managed:
-#    - source: salt://slurm/slurmdbd.conf
-#    - template: jinja
-#
-#/var/log/slurm-llnl/slurmdbd.log:
+## Unused because of slurmdbd
+#/var/log/slurm-llnl/accounting.log:
 #  file.managed:
 #    - group: slurm
 #    - user: slurm
 #    - require:
 #      - user: slurm
-
-/var/log/slurm-llnl/accounting.log:
-  file.managed:
-    - group: slurm
-    - user: slurm
-    - require:
-      - user: slurm
-
-/var/log/slurm-llnl/job_completions.log:
-  file.managed:
-    - group: slurm
-    - user: slurm
-    - require:
-      - user: slurm
+#
+#/var/log/slurm-llnl/job_completions.log:
+#  file.managed:
+#    - group: slurm
+#    - user: slurm
+#    - require:
+#      - user: slurm
 
 /var/log/slurm-llnl/slurmctld.log:
   file.managed:
@@ -81,6 +68,9 @@
 # State munge has to be included to allow dependency on munge package
 include:
   - munge
+{% if grains['host'] == pillar['slurm']['controller'] %}
+  - slurmdbd
+{% endif %}
 
 # TODO handle different names given distro (slurm, slurm-llnl, ...)
 slurm:
@@ -108,7 +98,7 @@ slurm:
 {% if grains['host'] == pillar['slurm']['controller'] %}
       - file: /var/log/slurm-llnl/sched.log
       - file: /var/log/slurm-llnl/slurmctld.log
-#      - file: /etc/slurm-llnl/slurmdbd.conf
+      - pkg: slurmdbd
 {% endif %}
 
 slurm-plugins:
