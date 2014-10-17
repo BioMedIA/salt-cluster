@@ -7,3 +7,4 @@ Availables states:
   * Salt
   * Munge
   * SLURM
+  * SLURM Database
