@@ -4,7 +4,7 @@ slurm:
   nodes:
     gpus:
       bardolph:
-        mem: 15973
+        mem: 15972
         cores: 12
         gres:
           gpu: 2
@@ -23,7 +23,7 @@ slurm:
 
     {% for N in range(1,4,2) %} 
       biomedia0{{N}}:
-        mem: 64418
+        mem: 64417
         cores: 24
     {% endfor %}
     {% for N in range(2,6,3) %} 
@@ -33,15 +33,20 @@ slurm:
     {% endfor %}
     {% for N in range(6,10) %} 
       biomedia0{{N}}:
-        mem: 128851
+        mem: 128850
         cores: 64
     {% endfor %}
       biomedia10:
         mem: 128851
         cores: 24
       biomedia11:
-        mem: 257920
+        mem: 257919
         cores: 32
+    {% for N in range(1,12) %}
+      roc{{ "%02d" % N }}:
+        mem: 257906
+        cores: 32
+    {% endfor %}
 
   gres:
     - gpu
