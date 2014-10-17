@@ -12,12 +12,12 @@ slurm:
     cpus:
     {% for N in range(1,5) %} 
       predict{{N}}:
-        mem: 32177
+        mem: 32176
         cores: 8
     {% endfor %}
     {% for N in range(6,9,2) %} 
       predict{{N}}:
-        mem: 32177
+        mem: 32176
         cores: 8
     {% endfor %}
 
