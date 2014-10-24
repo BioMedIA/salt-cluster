@@ -10,7 +10,7 @@ slurm:
           gpu: 2
 
     cpus:
-    {% for N in range(1,5) %} 
+    {% for N in range(1,4) %} 
       predict{{N}}:
         mem: 32176
         cores: 8
