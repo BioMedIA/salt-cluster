@@ -51,3 +51,8 @@ slurm:
   gres:
     - gpu
 
+  db:
+    name: slurmdb
+    user: slurm
+    password: 1BUy4eVv7X
+
