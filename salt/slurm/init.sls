@@ -6,12 +6,24 @@
     - source: salt://slurm/slurm.conf
     - template: jinja
 
+/etc/slurm-llnl/cgroup.conf:
+  file.managed:
+    - source: salt://slurm/cgroup.conf
+
 /etc/slurm-llnl/slurm.cert:
   file.managed:
     - source: salt://slurm/slurm.cert
     - mode: 400
 
+# FIXME can the next 2 be factored?
 /var/spool/slurm-llnl:
+  file.directory:
+    - group: slurm
+    - user: slurm
+    - require:
+      - user: slurm
+
+/var/spool/slurm-llnl/cgroup:
   file.directory:
     - group: slurm
     - user: slurm
