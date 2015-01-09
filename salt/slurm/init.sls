@@ -126,19 +126,16 @@ slurm-plugins:
 {% endif %}
 
 
-# only on roc machines (for the moment...)
-{% if grains['host'].startswith('roc') %}
 ## disable ssh access when users don't have a job
 libpam-slurm:
   pkg.installed 
 
 /etc/pam.d/sshd-special:
   file.managed:
-    - source: salt://slurm/roc/sshd-special
+    - source: salt://slurm/ssh/sshd-special
 
 # FIXME ideally would just insert the line in /etc/pam/sshd 
 /etc/pam.d/sshd:
   file.managed:
-    - source: salt://slurm/roc/sshd
-{% endif %}
+    - source: salt://slurm/ssh/sshd
 
