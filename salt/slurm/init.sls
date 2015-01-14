@@ -129,6 +129,7 @@ slurm-plugins:
 ## disable ssh access when users don't have a job
 # on all machines except the controller
 {% if grains['host'] != pillar['slurm']['controller'] %}
+{% if grains['host'] != "bardolph" %}
 
 libpam-slurm:
   pkg.installed 
@@ -141,5 +142,6 @@ libpam-slurm:
 /etc/pam.d/sshd:
   file.managed:
     - source: salt://slurm/ssh/sshd
+{% endif %}
 {% endif %}
 
