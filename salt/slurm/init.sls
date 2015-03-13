@@ -80,6 +80,7 @@
 # State munge has to be included to allow dependency on munge package
 include:
   - munge
+  - ubuntu-utopic
 {% if grains['host'] == pillar['slurm']['controller'] %}
   - slurmdbd
 {% endif %}
