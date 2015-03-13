@@ -1,6 +1,0 @@
-##
-# Overcome incompatibility with Ubuntu 14.04 
-# https://bugs.launchpad.net/ubuntu/+source/munge/+bug/1287624
-##
-OPTIONS="--force" # --key-file /etc/munge/munged.key --num-threads 1"
-
