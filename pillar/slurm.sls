@@ -43,9 +43,9 @@ slurm:
         biomedia10:
           mem: 128851
           cores: 24
-      {% for N in range(4,13) %}
+      {% for N in range(4,17) %}
         roc{{ "%02d" % N }}:
-          mem: 257906
+          mem: 257875
           cores: 32
       {% endfor %}
 
