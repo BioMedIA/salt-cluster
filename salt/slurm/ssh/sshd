@@ -13,7 +13,7 @@ auth       required     pam_env.so envfile=/etc/default/locale
 # DCW: added 27th Oct 2009 to stop doing kerberos checks for non-existent users
 auth    [user_unknown=die default=ignore]        pam_unix.so nodelay
 # only allow login when resources have been granted by SLURM
-account  required  pam_slurm.so
+#account  required  pam_slurm.so
 auth    [success=2 default=ignore]      pam_krb5.so realm=IC.AC.UK ignore_root 
 auth    [success=1 default=ignore]      pam_krb5.so realm=DOC.IC.AC.UK use_first_pass ignore_root
 # here's the fallback if no module succeeds

@@ -139,6 +139,16 @@ libpam-slurm:
   file.managed:
     - source: salt://slurm/ssh/sshd-special
 
+# completely disable SSH
+/etc/security/access.conf:
+  file.managed:
+    - source: salt://slurm/ssh/access.conf
+
+/etc/security/access.conf-special:
+  file.managed:
+    - source: salt://slurm/ssh/access.conf-special
+
+
 # FIXME ideally would just insert the line in /etc/pam/sshd 
 /etc/pam.d/sshd:
   file.managed:
