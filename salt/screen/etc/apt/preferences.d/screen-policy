@@ -1,0 +1,4 @@
+Explanation: Disable CSG auto-install
+Package: screen
+Pin: version *
+Pin-Priority: -1
