@@ -2,6 +2,9 @@
 munin-node:
   pkg:
     - installed
+  service.running:
+    - watch:
+      - file: /etc/munin/plugins/*
 
 # specify IP of Munin master (biomedia04) 
 # and force host name to match master's definition
