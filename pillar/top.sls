@@ -1,5 +1,6 @@
 
 base:
   '*':
+    - munin
     - salt
     - slurm
