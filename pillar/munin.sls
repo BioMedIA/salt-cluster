@@ -9,6 +9,7 @@ munin:
       - exim_mailqueue
       - forks
       - fw_packets
+      - hddtemp_smartctl
       - if_err_eth0
       - if_err_eth1
       - if_err_eth2
@@ -43,16 +44,21 @@ munin:
       - mysql_sorts
       - mysql_table_locks
       - mysql_tmp_tables
+      - nfsd
+      - nfsd4
       - ntp_127.127.1.0
       - ntp_146.169.1.1
       - ntp_146.169.1.156
       - ntp_146.169.1.24
-      - ntp_155.198.63.100
+      - ntp_455.198.63.100
       - ntp_155.198.63.101
       - ntp_kernel_err
       - ntp_kernel_pll_freq
       - ntp_kernel_pll_off
       - ntp_offset
       - ntp_states
+      - open_inodes
       - proc_pri
+      - smart_sda
+      - smart_sdb
 
