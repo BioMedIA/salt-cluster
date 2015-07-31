@@ -13,7 +13,7 @@ salt-master:
 /etc/salt/master:
   file.managed:
     - template: jinja
-    - source: salt://salt/master
+    - source: salt://salt/etc/salt/master
     - require:
       - pkg: salt-master
 
@@ -33,7 +33,7 @@ salt-minion:
 /etc/salt/minion:
   file.managed:
     - template: jinja
-    - source: salt://salt/minion
+    - source: salt://salt/etc/salt/minion
     - require:
       - pkg: salt-minion
 
