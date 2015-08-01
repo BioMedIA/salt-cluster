@@ -1,5 +1,4 @@
 
 slurm:
   '*':
-    - salt
     - slurm

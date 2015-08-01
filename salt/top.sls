@@ -1,7 +1,6 @@
 
 slurm:
   '*':
-    - salt
     - munge
     - ssh
     - screen
