@@ -1,9 +1,8 @@
 
-base:
+slurm:
   '*':
     - salt
     - munge
     - ssh
     - screen
     - slurm
-    - munin
