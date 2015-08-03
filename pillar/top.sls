@@ -1,4 +1,0 @@
-
-slurm:
-  '*':
-    - slurm

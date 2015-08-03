@@ -6,6 +6,6 @@ screen:
 
 /etc/apt/preferences.d/screen-policy:
   file.managed:
-    - source: salt://screen/etc/apt/preferences.d/screen-policy
+    - source: salt://slurm/files/etc/apt/preferences.d/screen-policy
     - mode: 644
 

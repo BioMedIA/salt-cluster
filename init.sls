@@ -1,18 +1,27 @@
+# State munge has to be included to allow dependency on munge package
+include:
+  - .munge
+  - .ubuntu-utopic
+  - .ssh
+  - .screen
+{% if grains['host'] == pillar['slurm']['controller'] %}
+  - .slurmdbd
+{% endif %}
 
 # The SLURM scheduling system
 
 /etc/slurm-llnl/slurm.conf:
   file.managed:
-    - source: salt://slurm/slurm.conf
+    - source: salt://slurm/files/etc/slurm-llnl/slurm.conf
     - template: jinja
 
 /etc/slurm-llnl/cgroup.conf:
   file.managed:
-    - source: salt://slurm/cgroup.conf
+    - source: salt://slurm/files/etc/slurm-llnl/cgroup.conf
 
 /etc/slurm-llnl/slurm.cert:
   file.managed:
-    - source: salt://slurm/slurm.cert
+    - source: salt://slurm/files/etc/slurm-llnl/slurm.cert
     - mode: 400
 
 # FIXME can the next 2 be factored?
@@ -43,7 +52,7 @@
 {% if grains['host'] == pillar['slurm']['controller'] %}
 /etc/slurm-llnl/slurm.key:
   file.managed:
-    - source: salt://slurm/slurm.key
+    - source: salt://slurm/files/etc/slurm-llnl/slurm.key
     - mode: 400
  
 ## Unused because of slurmdbd
@@ -76,14 +85,6 @@
       - user: slurm
 {% endif %}
 
-
-# State munge has to be included to allow dependency on munge package
-include:
-  - munge
-  - ubuntu-utopic
-{% if grains['host'] == pillar['slurm']['controller'] %}
-  - slurmdbd
-{% endif %}
 
 # TODO handle different names given distro (slurm, slurm-llnl, ...)
 slurm:
@@ -121,8 +122,8 @@ slurm-plugins:
 /etc/slurm-llnl/gres.conf:
   file.managed:
 {% if grains['host'] == "bardolph" %}
-    - source: salt://slurm/bardolph/gres.conf
+    - source: salt://slurm/files/etc/slurm-llnl/bardolph/gres.conf
 {% else %} 
-    - source: salt://slurm/default/gres.conf
+    - source: salt://slurm/files/etc/slurm-llnl/default/gres.conf
 {% endif %}
 

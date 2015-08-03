@@ -23,7 +23,7 @@ munge:
   file.managed:
     - group: munge
     - user: munge
-    - source: salt://munge/munge.key
+    - source: salt://slurm/files/etc/munge/munge.key
     - mode: 400
     - require:
       - user: munge
@@ -70,5 +70,5 @@ munge:
 
 /etc/default/munge:
    file.managed:
-    - source: salt://munge/etc/default/munge
+    - source: salt://slurm/files/etc/default/munge
  
