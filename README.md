@@ -1,12 +1,10 @@
 
-# BioMedIAs Salt provisions
+# Slurm Salt formula
 
-Salt states provisioning BioMedIA group's machines.
+Salt formula provisioning a Slurm cluster
 
 Availables states:
   * Munge
-  * Munin
-  * Salt
   * Screen
   * Slurm
   * Slurm Database
