@@ -5,7 +5,7 @@
 {% if grains['host'] == pillar['slurm']['controller'] %}
 /etc/slurm-llnl/slurmdbd.conf:
   file.managed:
-    - source: salt://files/etc/slurm-llnl/slurmdbd.conf
+    - source: salt://slurm/files/etc/slurm-llnl/slurmdbd.conf
     - template: jinja
 
 /var/log/slurm-llnl/slurmdbd.log:
