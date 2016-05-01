@@ -1,7 +1,7 @@
 ## disable ssh access when users don't have a job
 # on all machines except the controller
 {% if grains['host'] != pillar['slurm']['controller'] %}
-{% if grains['host'] not in [ "bardolph", "monal01", "monal02"] %}
+{% if grains['host'] not in [ "monal01", "monal02"] %}
 
 libpam-slurm:
   pkg.installed 
