@@ -121,8 +121,8 @@ slurm-plugins:
 
 /etc/slurm-llnl/gres.conf:
   file.managed:
-{% if grains['host'] == "bardolph" %}
-    - source: salt://slurm/files/etc/slurm-llnl/bardolph/gres.conf
+{% if grains['host'] in [ "bardolph", "monal01", "monal02"] %}
+    - source: salt://slurm/files/etc/slurm-llnl/{{ grains['host'] }}/gres.conf
 {% else %} 
     - source: salt://slurm/files/etc/slurm-llnl/default/gres.conf
 {% endif %}
