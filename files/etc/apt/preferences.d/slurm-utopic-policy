@@ -1,5 +1,0 @@
-Explanation: Grab Slurm from utopic
-Package: libpam-slurm libpmi0 libpmi0-dev libslurm-dev libslurm-perl libslurm26 libslurmdb-dev libslurmdb-perl libslurmdb26 slurm-llnl slurm-llnl-basic-plugins slurm-llnl-basic-plugins-dev slurm-llnl-doc slurm-llnl-slurmdbd slurm-llnl-sview slurm-llnl-torque
-Pin: release n=utopic
-Pin-priority: 500
-

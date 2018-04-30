@@ -1,89 +1,82 @@
-# State munge has to be included to allow dependency on munge package
-include:
-  - .munge
-  - .ubuntu-utopic
-  - .ssh
-  - .screen
-{% if grains['host'] == pillar['slurm']['controller'] %}
-  - .slurmdbd
-{% endif %}
+# munge.key must be the same across all the nodes of the cluster
+munge:
+  pkg:
+    - installed
+  group.present:
+    - system: True
+    - gid: 98
+  user.present:
+    - uid: 98
+    - gid_from_name: True
+    - system: True
+    - shell: /bin/true
+    - createhome: False
+  service.running:
+    - name: munge
+#    - watch: 
+#      - user: munge
+#      - file: /etc/munge/munge.key
+    - require:
+      - pkg: munge
+      - user: munge
+      - file: /etc/munge/munge.key
 
-# The SLURM scheduling system
-
-/etc/slurm-llnl/slurm.conf:
+copy munge.key file:
   file.managed:
-    - source: salt://slurm/files/etc/slurm-llnl/slurm.conf
-    - template: jinja
+    - name: /etc/munge/munge.key
+    - source: salt://munge.key
 
-/etc/slurm-llnl/cgroup.conf:
-  file.managed:
-    - source: salt://slurm/files/etc/slurm-llnl/cgroup.conf
 
-/etc/slurm-llnl/slurm.cert:
-  file.managed:
-    - source: salt://slurm/files/etc/slurm-llnl/slurm.cert
-    - mode: 400
-
-# FIXME can the next 2 be factored?
-/var/spool/slurm-llnl:
+/var/log/munge:
   file.directory:
-    - group: slurm
-    - user: slurm
+    - group: munge
+    - user: munge
+    - recurse:
+      - user
+      - group
     - require:
-      - user: slurm
+      - user: munge
 
-/var/spool/slurm-llnl/cgroup:
+/run/munge:
   file.directory:
-    - group: slurm
-    - user: slurm
+    - group: munge
+    - user: munge
+    - recurse:
+      - user
+      - group
     - require:
-      - user: slurm
+      - user: munge
 
-{% if grains['host'] != pillar['slurm']['controller'] %}
-/var/log/slurm-llnl/slurm.log:
-  file.managed:
-    - group: slurm
-    - user: slurm
+/var/lib/munge:
+  file.directory:
+    - group: munge
+    - user: munge
+    - recurse:
+      - user
+      - group
     - require:
-      - user: slurm
-{% endif %}
+      - user: munge
 
-# specific to SLURM Controller
-{% if grains['host'] == pillar['slurm']['controller'] %}
-/etc/slurm-llnl/slurm.key:
-  file.managed:
-    - source: salt://slurm/files/etc/slurm-llnl/slurm.key
-    - mode: 400
- 
-## Unused because of slurmdbd
-#/var/log/slurm-llnl/accounting.log:
-#  file.managed:
-#    - group: slurm
-#    - user: slurm
+#/etc/munge:
+#  file.directory:
+#    - group: munge
+#    - user: munge
+#    - recurse:
+#      - user
+#      - group
 #    - require:
-#      - user: slurm
-#
-#/var/log/slurm-llnl/job_completions.log:
-#  file.managed:
-#    - group: slurm
-#    - user: slurm
-#    - require:
-#      - user: slurm
+#      - user: munge
 
-/var/log/slurm-llnl/slurmctld.log:
-  file.managed:
-    - group: slurm
-    - user: slurm
-    - require:
-      - user: slurm
-
-/var/log/slurm-llnl/sched.log:
-  file.managed:
-    - group: slurm
-    - user: slurm
-    - require:
-      - user: slurm
-{% endif %}
+install slurm packages from local repo:
+  pkg.installed:
+    - sources:
+      - libhdf5: salt://slurm/libhdf5-100_1.10.0-patch1+docs-3_amd64.deb
+      - libhwloc5: salt://slurm/libhwloc5_1.11.5-1_amd64.deb
+      - libpng16: salt://slurm/libpng16-16_1.6.28-1_amd64.deb
+      - libreadline7: salt://slurm/libreadline7_7.0-0ubuntu2_amd64.deb
+      - librrd8: salt://slurm/librrd8_1.6.0-1_amd64.deb
+      - slurm-wlm-basic-plugins: salt://slurm/slurm-wlm-basic-plugins_16.05.9-1ubuntu1_amd64.deb
+      - slurmd: salt://slurm/slurmd_16.05.9-1ubuntu1_amd64.deb
 
 
 # TODO handle different names given distro (slurm, slurm-llnl, ...)
@@ -98,32 +91,67 @@ slurm:
     - system: True
     - home: /var/spool/slurm-llnl
     - shell: /bin/true
-  pkg.installed:
-    - name: slurm-llnl 
   service.running:
-    - name: slurm-llnl
-    - watch:
-      - user: slurm
-      - pkg: slurm 
-      - pkg: slurm-plugins
-      - pkg: munge
+    - name: slurmd
+#    - watch:
+    - require:
+#      - pkg: slurmd
+#      - user: slurm
       - file: /etc/slurm-llnl/slurm.conf
-      - file: /var/spool/slurm-llnl
-{% if grains['host'] == pillar['slurm']['controller'] %}
-      - file: /var/log/slurm-llnl/sched.log
-      - file: /var/log/slurm-llnl/slurmctld.log
-      - pkg: slurmdbd
-{% endif %}
+#      - file: /var/spool/slurm-llnl
 
-slurm-plugins:
-  pkg.installed:
-    - name: slurm-llnl-basic-plugins
+
+# The SLURM scheduling system
+
+/etc/slurm-llnl/slurm.conf:
+  file.managed:
+    - name: /etc/slurm-llnl/slurm.conf
+    - source: salt://slurm.conf
+
+/etc/slurm-llnl/cgroup.conf:
+  file.managed:
+    - name: /etc/slurm-llnl/cgroup.conf
+    - source: salt://cgroup.conf
 
 /etc/slurm-llnl/gres.conf:
   file.managed:
-{% if grains['host'] in [ "bardolph", "monal01", "monal02"] %}
-    - source: salt://slurm/files/etc/slurm-llnl/{{ grains['host'] }}/gres.conf
-{% else %} 
-    - source: salt://slurm/files/etc/slurm-llnl/default/gres.conf
-{% endif %}
+    - name: /etc/slurm-llnl/gres.conf
+    - source: salt://gres.conf
 
+/etc/slurm-llnl/slurm.cert:
+  file.managed:
+    - name: /etc/slurm-llnl/slurm.cert
+    - source: salt://slurm.cert
+
+
+
+/var/spool/slurm-llnl:
+  file.directory:
+    - group: slurm
+    - user: slurm
+    - recurse:
+      - user
+      - group
+    - require:
+      - user: slurm
+
+
+/var/run/slurm-llnl:
+  file.directory:
+    - group: slurm
+    - user: slurm
+    - recurse:
+      - user
+      - group
+    - require:
+      - user: slurm
+
+/var/log/slurm-llnl:
+  file.directory:
+    - group: slurm
+    - user: slurm
+    - recurse:
+      - user
+      - group
+    - require:
+      - user: slurm
