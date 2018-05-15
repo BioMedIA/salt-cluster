@@ -1,3 +1,4 @@
+
 # check munge.key
 munge:
   pkg:
@@ -59,9 +60,6 @@ munge key diff output:
   cmd.run:
     - name: echo "munge keys are different. New key is to be copied from Salt master"
 
-munge key diff output:
-  cmd.run:
-    - name: echo "diff"
 copy munge.key file:
   file.managed:
     - name: /etc/munge/munge.key
@@ -82,12 +80,13 @@ copy slurm controller ver:
     - name: /tmp/slurm_master_ver.txt
     - source: salt://slurm_conf_files/slurm_ver.txt
 
-get slurmd ver:
-  cmd.run:
-    - name: dpkg -s slurmd |grep "^Version:" > /tmp/local_slurm_ver.txt
+# do the following get slurm ver separately to guarantee it runs properly
+#get slurmd ver:
+#  cmd.run:
+#    - name: dpkg -s slurmd |grep "^Version:" > /tmp/local_slurm_ver.txt
 
 #check versions:
-{% if salt['cmd.run'](" diff /tmp/slurm_master_ver.txt /tmp/local_slurm_ver.txt >/dev/null ")!=0 %}
+{% if salt['cmd.run'](" diff /tmp/slurm_master_ver.txt /tmp/local_slurm_ver.txt ") %}
 check ver output:
   cmd.run:
     - name: echo "slurm versions are different, old ones are to be removed, new ones are installing"
