@@ -1,0 +1,4 @@
+Name=gpu File=/dev/nvidia0
+Name=gpu File=/dev/nvidia1
+Name=gpu File=/dev/nvidia2
+Name=gpu File=/dev/nvidia3
