@@ -1,4 +1,5 @@
 # munge.key must be the same across all the nodes of the cluster
+
 munge:
   pkg:
     - installed
@@ -6,27 +7,20 @@ munge:
     - system: True
     - gid: 98
   user.present:
-    - uid: 98
+    - uid: 69
     - gid_from_name: True
     - system: True
     - shell: /bin/true
     - createhome: False
   service.running:
     - name: munge
-#    - watch: 
-#      - user: munge
-#      - file: /etc/munge/munge.key
+    - enable: False
     - require:
-      - pkg: munge
-      - user: munge
       - file: /etc/munge/munge.key
 
-copy munge.key file:
-  file.managed:
-    - name: /etc/munge/munge.key
-    - source: salt://munge.key
-
-
+#stop munge:
+#  cmd.run:
+#    - name: systemctl stop munge
 /var/log/munge:
   file.directory:
     - group: munge
@@ -36,8 +30,7 @@ copy munge.key file:
       - group
     - require:
       - user: munge
-
-/run/munge:
+/var/run/munge:
   file.directory:
     - group: munge
     - user: munge
@@ -57,26 +50,92 @@ copy munge.key file:
     - require:
       - user: munge
 
-#/etc/munge:
-#  file.directory:
-#    - group: munge
-#    - user: munge
-#    - recurse:
-#      - user
-#      - group
-#    - require:
+/etc/munge:
+  file.directory:
+    - group: munge
+    - user: munge
+    - recurse:
+      - user
+      - group
+    - require:
+      - user: munge
+
+/run/munge:
+  file.directory:
+    - group: munge
+    - user: munge
+    - recurse:
+      - user
+      - group
+    - require:
+      - user: munge
+#reload munge:
+#  cmd.run:
+#    - name: systemctl start munge
+
+
+#munge:
+#  pkg:
+#    - installed
+#  service.running:
+#    - enable: False
+#  group.present:
+#    - system: True
+#    - gid: 98
+#  user.present:
+#    - uid: 69
+#    - gid_from_name: True
+#    - system: True
+#    - shell: /bin/true
+#    - createhome: False
+#  service.running:
+#    - name: munge
+#    - watch: 
 #      - user: munge
+#      - file: /etc/munge/munge.key
+#    - require:
+#      - pkg: munge
+#      - user: munge
+#      - file: /etc/munge/munge.key
+
+#install munge:
+#  pkg:
+#    - installed
+#  service.running:
+#    - enable: False
+
+copy munge.key file:
+  file.managed:
+    - name: /etc/munge/munge.key
+    - source: salt://munge.key
+
+#reload munge:
+#  service.running:
+#    - enable: True
+#    - reload: True
+#    - watch:
+#       - pkg: munge
+
+
+starting munge:
+  cmd.run:
+    - name: systemctl start munge
+
+
+install dependencies for Slurm:
+  cmd.run:
+    - name: aptitude install -y libipmimonitoring5a
 
 install slurm packages from local repo:
   pkg.installed:
     - sources:
-      - libhdf5: salt://slurm/libhdf5-100_1.10.0-patch1+docs-3_amd64.deb
-      - libhwloc5: salt://slurm/libhwloc5_1.11.5-1_amd64.deb
-      - libpng16: salt://slurm/libpng16-16_1.6.28-1_amd64.deb
-      - libreadline7: salt://slurm/libreadline7_7.0-0ubuntu2_amd64.deb
-      - librrd8: salt://slurm/librrd8_1.6.0-1_amd64.deb
-      - slurm-wlm-basic-plugins: salt://slurm/slurm-wlm-basic-plugins_16.05.9-1ubuntu1_amd64.deb
-      - slurmd: salt://slurm/slurmd_16.05.9-1ubuntu1_amd64.deb
+      - libhdf5: salt://slurm_deb/libhdf5-100_1.10.0-patch1+docs-3_amd64.deb
+      - libhwloc5: salt://slurm_deb/libhwloc5_1.11.5-1_amd64.deb
+      - libpng16: salt://slurm_deb/libpng16-16_1.6.28-1_amd64.deb
+      - libreadline7: salt://slurm_deb/libreadline7_7.0-0ubuntu2_amd64.deb
+      - librrd8: salt://slurm_deb/librrd8_1.6.0-1_amd64.deb
+      - slurm-wlm-basic-plugins: salt://slurm_deb/slurm-wlm-basic-plugins_16.05.9-1ubuntu1_amd64.deb
+      - slurmd: salt://slurm_deb/slurmd_16.05.9-1ubuntu1_amd64.deb
 
 
 # TODO handle different names given distro (slurm, slurm-llnl, ...)
@@ -86,18 +145,18 @@ slurm:
     - gid: 97
   user.present:
     - fullname: SLURM daemon user account
-    - uid: 97
+    - uid: 14
     - gid_from_name: True
     - system: True
     - home: /var/spool/slurm-llnl
     - shell: /bin/true
-  service.running:
-    - name: slurmd
+#  service.running:
+#    - name: slurmd
 #    - watch:
-    - require:
+#    - require:
 #      - pkg: slurmd
 #      - user: slurm
-      - file: /etc/slurm-llnl/slurm.conf
+#      - file: /etc/slurm-llnl/slurm.conf
 #      - file: /var/spool/slurm-llnl
 
 
@@ -106,27 +165,27 @@ slurm:
 /etc/slurm-llnl/slurm.conf:
   file.managed:
     - name: /etc/slurm-llnl/slurm.conf
-    - source: salt://files/etc/slurm-llnl/slurm.conf
+    - source: salt://slurm.conf
 
 /etc/slurm-llnl/cgroup.conf:
   file.managed:
     - name: /etc/slurm-llnl/cgroup.conf
-    - source: salt://files/etc/slurm-llnl/cgroup.conf
+    - source: salt://cgroup.conf
 
 /etc/slurm-llnl/gres.conf:
   file.managed:
-{% if grains['host'] in ['monal01','monal02'] %}
-    - source: salt://files/etc/slurm-llnl/gres.conf_gpu
-{% elif grains['host'] in ['monal03'] %}
-    - source: salt://files/etc/slurm-llnl/gres.conf_gpu_l
-{% else %}
-    - source: salt://files/etc/slurm-llnl/gres.conf
+    - name: /etc/slurm-llnl/gres.conf
+    - source: salt://gres.conf
 
 /etc/slurm-llnl/slurm.cert:
   file.managed:
     - name: /etc/slurm-llnl/slurm.cert
-    - source: salt://files/etc/slurm-llnl/slurm.cert
+    - source: salt://slurm.cert
 
+/etc/slurm-llnl/slurm.key:
+  file.managed:
+    - name: /etc/slurm-llnl/slurm.key
+    - source: salt://slurm.key
 
 
 /var/spool/slurm-llnl:
@@ -159,3 +218,6 @@ slurm:
       - group
     - require:
       - user: slurm
+reload slurmd:
+  cmd.run:
+    - name: systemctl restart slurmd
