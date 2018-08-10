@@ -165,17 +165,24 @@ slurm:
 /etc/slurm-llnl/slurm.conf:
   file.managed:
     - name: /etc/slurm-llnl/slurm.conf
-    - source: salt://slurm.conf
+    - source: salt://files/etc/slurm-llnl/slurm.conf
 
 /etc/slurm-llnl/cgroup.conf:
   file.managed:
     - name: /etc/slurm-llnl/cgroup.conf
-    - source: salt://cgroup.conf
+    - source: salt://files/etc/slurm-llnl/cgroup.conf
 
 /etc/slurm-llnl/gres.conf:
   file.managed:
     - name: /etc/slurm-llnl/gres.conf
-    - source: salt://gres.conf
+{% if grains['host'] in ['monal01', 'monal02'] %}
+    - source: salt://files/etc/slurm-llnl/gres_gpu.conf
+{% elif grains['host'] in ['monal03']  %}
+    - source: salt://files/etc/slurm-llnl/gres_gpu_l.conf
+{% else %}
+    - source: salt://files/etc/slurm-llnl/gres.conf
+{% endif %}
+
 
 /etc/slurm-llnl/slurm.cert:
   file.managed:
