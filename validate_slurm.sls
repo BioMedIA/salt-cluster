@@ -1,5 +1,5 @@
-# munge.key must be the same across all the nodes of the cluster
 
+# check munge.key
 munge:
   pkg:
     - installed
@@ -7,50 +7,19 @@ munge:
     - system: True
     - gid: 98
   user.present:
-    - uid: 69
+    - uid: 98
     - gid_from_name: True
     - system: True
     - shell: /bin/true
     - createhome: False
   service.running:
     - name: munge
-    - enable: False
     - require:
+      - pkg: munge
+      - user: munge
       - file: /etc/munge/munge.key
 
-#stop munge:
-#  cmd.run:
-#    - name: systemctl stop munge
 /var/log/munge:
-  file.directory:
-    - group: munge
-    - user: munge
-    - recurse:
-      - user
-      - group
-    - require:
-      - user: munge
-/var/run/munge:
-  file.directory:
-    - group: munge
-    - user: munge
-    - recurse:
-      - user
-      - group
-    - require:
-      - user: munge
-
-/var/lib/munge:
-  file.directory:
-    - group: munge
-    - user: munge
-    - recurse:
-      - user
-      - group
-    - require:
-      - user: munge
-
-/etc/munge:
   file.directory:
     - group: munge
     - user: munge
@@ -69,62 +38,68 @@ munge:
       - group
     - require:
       - user: munge
-#reload munge:
-#  cmd.run:
-#    - name: systemctl start munge
 
+/var/lib/munge:
+  file.directory:
+    - group: munge
+    - user: munge
+    - recurse:
+      - user
+      - group
+    - require:
+      - user: munge
+precopy munge.key file:
+  file.managed:
+    - name: /tmp/master_munge.key
+    - source: salt://slurm_conf_files/munge.key
 
-#munge:
-#  pkg:
-#    - installed
-#  service.running:
-#    - enable: False
-#  group.present:
-#    - system: True
-#    - gid: 98
-#  user.present:
-#    - uid: 69
-#    - gid_from_name: True
-#    - system: True
-#    - shell: /bin/true
-#    - createhome: False
-#  service.running:
-#    - name: munge
-#    - watch: 
-#      - user: munge
-#      - file: /etc/munge/munge.key
-#    - require:
-#      - pkg: munge
-#      - user: munge
-#      - file: /etc/munge/munge.key
+#check if munge.key are different:
+{% if salt['cmd.run'](" diff /tmp/master_munge.key /etc/munge/munge.key" ) %}
 
-#install munge:
-#  pkg:
-#    - installed
-#  service.running:
-#    - enable: False
+munge key diff output:
+  cmd.run:
+    - name: echo "munge keys are different. New key is to be copied from Salt master"
 
 copy munge.key file:
   file.managed:
     - name: /etc/munge/munge.key
-    - source: salt://munge.key
-
-#reload munge:
-#  service.running:
-#    - enable: True
-#    - reload: True
-#    - watch:
-#       - pkg: munge
-
-
-starting munge:
+    - source: salt://slurm_conf_files/munge.key
+munge re-start:
   cmd.run:
-    - name: systemctl start munge
+    - name: systemctl restart munge
 
-
-install dependencies for Slurm:
+{% else %}
+munge key no diff output:
   cmd.run:
-    - name: aptitude install -y libipmimonitoring5a
+    - name: echo "munge key is identical with Salt master, no further action needed."
+{% endif %}
+
+# === check slurm ===
+copy slurm controller ver:
+  file.managed:
+    - name: /tmp/slurm_master_ver.txt
+    - source: salt://slurm_conf_files/slurm_ver.txt
+
+# do the following get slurm ver separately to guarantee it runs properly
+#get slurmd ver:
+#  cmd.run:
+#    - name: dpkg -s slurmd |grep "^Version:" > /tmp/local_slurm_ver.txt
+
+#check versions:
+{% if salt['cmd.run'](" diff /tmp/slurm_master_ver.txt /tmp/local_slurm_ver.txt ") %}
+check ver output:
+  cmd.run:
+    - name: echo "slurm versions are different, old ones are to be removed, new ones are installing"
+
+copy sh to remove old slurm:
+  file.managed:
+    - name: /tmp/remove_old_slurm.sh
+    - source: salt://remove_old_slurm.sh
+    - mode: 777
+
+remove old slurm:
+  cmd.run:
+    - name: /tmp/remove_old_slurm.sh
 
 install slurm packages from local repo:
   pkg.installed:
@@ -137,6 +112,11 @@ install slurm packages from local repo:
       - slurm-wlm-basic-plugins: salt://slurm_deb/slurm-wlm-basic-plugins_16.05.9-1ubuntu1_amd64.deb
       - slurmd: salt://slurm_deb/slurmd_16.05.9-1ubuntu1_amd64.deb
 
+{% else %}
+ver no diff output:
+  cmd.run:
+    - name: echo "Slurm version is same as Slurm master, no need to install Slurm"
+{% endif %}
 
 # TODO handle different names given distro (slurm, slurm-llnl, ...)
 slurm:
@@ -145,55 +125,36 @@ slurm:
     - gid: 97
   user.present:
     - fullname: SLURM daemon user account
-    - uid: 14
+    - uid: 97
     - gid_from_name: True
     - system: True
     - home: /var/spool/slurm-llnl
     - shell: /bin/true
-#  service.running:
-#    - name: slurmd
-#    - watch:
-#    - require:
-#      - pkg: slurmd
-#      - user: slurm
-#      - file: /etc/slurm-llnl/slurm.conf
-#      - file: /var/spool/slurm-llnl
-
+  service.running:
+    - name: slurmd
+    - require:
+      - file: /etc/slurm-llnl/slurm.conf
 
 # The SLURM scheduling system
 
 /etc/slurm-llnl/slurm.conf:
   file.managed:
     - name: /etc/slurm-llnl/slurm.conf
-    - source: salt://files/etc/slurm-llnl/slurm.conf
+    - source: salt://slurm_conf_files/slurm.conf
 
 /etc/slurm-llnl/cgroup.conf:
   file.managed:
     - name: /etc/slurm-llnl/cgroup.conf
-    - source: salt://files/etc/slurm-llnl/cgroup.conf
+    - source: salt://slurm_conf_files/cgroup.conf
 
 /etc/slurm-llnl/gres.conf:
   file.managed:
     - name: /etc/slurm-llnl/gres.conf
-{% if grains['host'] in ['monal01', 'monal02'] %}
-    - source: salt://files/etc/slurm-llnl/gres_gpu.conf
-{% elif grains['host'] in ['monal03']  %}
-    - source: salt://files/etc/slurm-llnl/gres_gpu_l.conf
-{% else %}
-    - source: salt://files/etc/slurm-llnl/gres.conf
-{% endif %}
-
 
 /etc/slurm-llnl/slurm.cert:
   file.managed:
     - name: /etc/slurm-llnl/slurm.cert
-    - source: salt://slurm.cert
-
-/etc/slurm-llnl/slurm.key:
-  file.managed:
-    - name: /etc/slurm-llnl/slurm.key
-    - source: salt://slurm.key
-
+    - source: salt://slurm_conf_files/slurm.cert
 
 /var/spool/slurm-llnl:
   file.directory:
@@ -204,7 +165,6 @@ slurm:
       - group
     - require:
       - user: slurm
-
 
 /var/run/slurm-llnl:
   file.directory:
@@ -225,6 +185,7 @@ slurm:
       - group
     - require:
       - user: slurm
-reload slurmd:
+
+slurmd re-start:
   cmd.run:
     - name: systemctl restart slurmd

@@ -1,5 +1,0 @@
-Explanation: disable utopic packages by default
-Package: *
-Pin: release n=utopic
-Pin-priority: -1
-

@@ -1,38 +1,23 @@
 
 slurm:
-  controller: predict5
+  controller: biomedia03
   nodes:
     batch:
       gpus:
-        bardolph:
-          mem: 15972
-          cores: 12
+        monal01:
+          mem: 80000
+          cores: 40
           gres:
-            gpu: 2
-
+            gpu: 8
+		monal02:
+          mem: 80000
+          cores: 40
+          gres:
+            gpu: 8
       cpus:
-        predict1:
-          mem: 30160
-          cores: 8
-      {% for N in range(2,4) %}
-        predict{{N}}:
-          mem: 32176
-          cores: 8
-      {% endfor %}
-      {% for N in range(6,9,2) %}
-        predict{{N}}:
-          mem: 32176
-          cores: 8
-      {% endfor %}
-
-      {% for N in range(1,4,2) %}
+      {% for N in [1,2,5] %}
         biomedia0{{N}}:
-          mem: 64417
-          cores: 24
-      {% endfor %}
-      {% for N in range(2,6,3) %}
-        biomedia0{{N}}:
-          mem: 64417
+          mem: 63800
           cores: 24
       {% endfor %}
       {% for N in range(6,10) %}
@@ -40,12 +25,12 @@ slurm:
           mem: 128850
           cores: 64
       {% endfor %}
-        biomedia10:
-          mem: 128851
+	    biomedia10:
+          mem: 128850
           cores: 24
-      {% for N in range(4,17) %}
+      {% for N in range(1,17) %}
         roc{{ "%02d" % N }}:
-          mem: 257875
+          mem: 257869
           cores: 32
       {% endfor %}
 
@@ -54,13 +39,7 @@ slurm:
         biomedia11:
           mem: 257919
           cores: 32
-        {% for N in range(1,4) %}
-        roc{{ "%02d" % N }}:
-          mem: 257906
-          cores: 32
-        {% endfor %}
-
-
+		  
   gres:
     - gpu
 
